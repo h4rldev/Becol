@@ -16,7 +16,7 @@
 #endif
 
 int main(int argc, char* argv[]) {
-    printf("Using libbecol version %s\n", BecolVersion());
+    printf("Using libbecol version %s. Made by Carson Coder and Licensed under the GPL 3.0 License\n", BecolVersion());
     BecolInit();
     int arg_num = 1;
     char* file = NULL;
