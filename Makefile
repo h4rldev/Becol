@@ -14,9 +14,9 @@ LIB_CFLAGS = -fPIC -DVERSION="\"$(LIB_VERSION)\""
 OS := $(shell uname)
 
 ifeq ($(OS),Darwin)
-LIB_INCLUDE_FLAGS := -l$(LIB_TARGET)
+LIB_INCLUDE_FLAGS := -l$(NAME)
 else
-LIB_INCLUDE_FLAGS := -l:$(LIB_TARGET)
+LIB_INCLUDE_FLAGS := -l:lib$(NAME).so
 endif
 
 .PHONY: default all clean
@@ -43,7 +43,7 @@ HEADERS = $(wildcard *.h)
 
 $(TARGET): $(OBJECTS) $(LIB_TARGET)
 	mkdir -p bin
-	$(CC) $(OBJECTS) -Wall $(LIBS) -o $@ -L. $(LIB_INCLUDE_FLAGS) $(CFLAGS)
+	$(CC) $(OBJECTS) -Wall $(LIBS) -o $@ -Lbin $(LIB_INCLUDE_FLAGS) $(CFLAGS)
 
 $(LIB_TARGET): CFLAGS += $(LIB_CFLAGS)
 $(LIB_TARGET): $(LIB_OBJECTS)
@@ -52,7 +52,7 @@ $(LIB_TARGET): $(LIB_OBJECTS)
 
 $(WIN_TARGET): $(OBJECTS) $(WIN_LIB_TARGET)
 	mkdir -p bin
-	$(CC) $(OBJECTS) -Wall $(LIBS) -o $@ -L. -l:$(LIB_TARGET)
+	$(CC) $(OBJECTS) -Wall $(LIBS) -o $@ -Lbin $(LIB_INCLUDE_FLAGS)
 
 $(WIN_LIB_TARGET): CFLAGS += $(LIB_CFLAGS)
 $(WIN_LIB_TARGET): $(LIB_OBJECTS)
