@@ -24,6 +24,7 @@ endif
 default: release
 release: $(TARGET)
 debug: CFLAGS += -g -fsanitize=address
+debug: LIB_CFLAGS += -g -fsanitize=address -static-libasan
 debug: $(TARGET)
 all: default
 
@@ -65,3 +66,7 @@ clean:
 
 run: $(TARGET)
 	$(TARGET)
+
+bear:
+	bear -- make all
+

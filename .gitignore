@@ -1,3 +1,11 @@
 *.o
 bin/*
 .ccls-cache/*
+
+.cache
+.envrc
+
+# don't use global compile_commands.json, as they differ depending on system.
+compile_commands.json
+
+

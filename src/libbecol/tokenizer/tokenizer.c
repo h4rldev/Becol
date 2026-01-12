@@ -1,18 +1,16 @@
-#include <stddef.h>
-#include <stdio.h>
 #include "tokenizer.h"
+#include "../memory/mem.h"
 #include "asttree.h"
 #include "tokens.h"
-#include "../errors/errors.h"
+#include <stddef.h>
 
+ASTTreeNode *BecolGenASTTree(MemoryArena *arena, char *prog_text) {
+    // Program *prog = BecolGetProgram(arena, prog_text);
 
-ASTTreeNode* BecolGenASTTree(char* prog_text) {
-    Program* prog = BecolGetProgram(prog_text);
-
-    ASTTreeNode* root = BecolMallocASTNode();
+    ASTTreeNode *root = BecolAllocASTNode(arena);
     root->type = BECOL_AST_PROGRAM;
 
-    BecolFreeProgram(prog);
+    BecolFreeProgram(arena);
 
     return root;
 }
@@ -20,19 +18,17 @@ ASTTreeNode* BecolGenASTTree(char* prog_text) {
 //  ENBF:
 //  TODO: This does not contain loops cause that is something we can do later
 //
-//  Program 
+//  Program
 //      : {statement}
 //      ;
 //  statement
 //      : 'ask' identifer 'to' identifer value_decl '\n'
 //      | 'tell' identifer 'to' identifer value_decl '\n'
 //      | 'ask' identifer 'for' identifer '\n'
-//      | 'tell' identifer 'that' identifer 'is' expr {'and' identifer 'is' expr} '\n'
-//      | variable 'is' expr '\n'
-//      | 'wait for' identifer '\n'
-//      | 'action' identifer '{' {statement} '}' '\n'
-//      | 'do action' identifer named_decl '\n'
-//      | '\n'
+//      | 'tell' identifer 'that' identifer 'is' expr {'and' identifer 'is'
+//      expr} '\n' | variable 'is' expr '\n' | 'wait for' identifer '\n' |
+//      'action' identifer '{' {statement} '}' '\n' | 'do action' identifer
+//      named_decl '\n' | '\n'
 //      ;
 //
 //  value_decl
