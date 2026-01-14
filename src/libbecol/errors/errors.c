@@ -2,6 +2,7 @@
 #include "../memory/mem.h"
 #include <stdbool.h>
 #include <stdio.h>
+#include <string.h>
 
 bool errorFlag = false;
 Error *currentError;
@@ -15,17 +16,20 @@ void BecolReportError(MemoryArena *arena, ErrorCode err, char *message) {
     errorFlag = true;
     currentError = BecolArenaPushStruct(arena, Error, false);
     currentError->err = err;
+    currentError->message =
+        BecolArenaPushArray(arena, char, strlen(message) + 1, false);
+    memcpy(currentError->message, message, strlen(message) + 1);
     // currentError->message = BecolStrMalloc(message); // we cannot guarantee
     // that the string
     //  will be avaliable forever so we just
     //  copy it
 }
 
-bool BecolIsError() { return errorFlag; }
+bool BecolIsError(void) { return errorFlag; }
 
-void BecolClearError() { errorFlag = false; }
+void BecolClearError(void) { errorFlag = false; }
 
-void BecolPrintError() {
+void BecolPrintError(void) {
     if (errorFlag)
         printf("err: code: %d msg: \"%s\"\n", currentError->err,
                currentError->message); // TODO: actually good printing

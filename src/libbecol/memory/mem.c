@@ -4,7 +4,7 @@
 #include <string.h>
 
 #if defined(_WIN32)
-    #include <windows.h>
+#include <windows.h>
 
 uint32_t BecolGetPageSize(void) {
     SYSTEM_INFO sysinfo = {0};
@@ -32,12 +32,12 @@ bool BecolReleaseMemory(void *ptr, uint64_t size) {
 
 #elif defined(__linux__)
 
-    #ifndef _DEFAULT_SOURCE
-        #define _DEFAULT_SOURCE
-    #endif
+#ifndef _DEFAULT_SOURCE
+#define _DEFAULT_SOURCE
+#endif
 
-    #include <sys/mman.h>
-    #include <unistd.h>
+#include <sys/mman.h>
+#include <unistd.h>
 
 uint32_t BecolGetPageSize(void) { return (uint32_t)sysconf(_SC_PAGESIZE); }
 
@@ -67,7 +67,7 @@ bool BecolReleaseMemory(void *ptr, uint64_t size) {
     return ret == 0;
 }
 #else
-    #error "MacOS is unsupported"
+#error "MacOS is unsupported"
 #endif
 
 // these function should be used instead of malloc and free

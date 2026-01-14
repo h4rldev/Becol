@@ -4,7 +4,9 @@
 #include "tokens.h"
 #include <stddef.h>
 
-ASTTreeNode *BecolGenASTTree(MemoryArena *arena, char *prog_text) {
+ASTTreeNode *BecolGenASTTree(MemoryArena *arena
+                             // , char *prog_text
+) {
     // Program *prog = BecolGetProgram(arena, prog_text);
 
     ASTTreeNode *root = BecolAllocASTNode(arena);

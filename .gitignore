@@ -4,8 +4,7 @@ bin/*
 
 .cache
 .envrc
+.direnv
 
 # don't use global compile_commands.json, as they differ depending on system.
 compile_commands.json
-
-

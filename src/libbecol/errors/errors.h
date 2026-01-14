@@ -16,8 +16,8 @@ extern bool errorFlag;
 extern Error *currentError;
 
 void BecolReportError(MemoryArena *arena, ErrorCode err, char *message);
-bool BecolIsError();
-void BecolClearError();
-void BecolPrintError();
+bool BecolIsError(void);
+void BecolClearError(void);
+void BecolPrintError(void);
 
 #endif

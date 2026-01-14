@@ -40,7 +40,9 @@ ASTTreeNode *BecolAllocASTNode(MemoryArena *arena) {
     return node;
 }
 
-void BecolFreeASTNode(MemoryArena *arena, ASTTreeNode *node) {
+void BecolFreeASTNode(MemoryArena *arena
+                      //, ASTTreeNode *node
+) {
     BecolArenaPop(arena, sizeof(ASTTreeNode));
 }
 

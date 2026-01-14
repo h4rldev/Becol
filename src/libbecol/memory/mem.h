@@ -9,7 +9,7 @@
 #define KiB(num) ((uint64_t)(num) << 10)
 #define MiB(num) ((uint64_t)(num) << 20)
 #define GiB(num) ((uint64_t)(num) << 30)
-#define ALIGN_UP_TO_POW2(num, pow) \
+#define ALIGN_UP_TO_POW2(num, pow)                                             \
     (((uint64_t)(num) + ((uint64_t)(pow) - 1)) & (~((uint64_t)(pow) - 1)))
 
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
@@ -58,9 +58,9 @@ TemporaryArena BecolArenaScratchGet(MemoryArena **conflicts,
                                     uint32_t num_conflicts);
 void BecolArenaScratchRelease(TemporaryArena scratch);
 
-#define BecolArenaPushStruct(arena, T, nz) \
+#define BecolArenaPushStruct(arena, T, nz)                                     \
     (T *)BecolArenaPush(arena, sizeof(T), (bool)nz)
-#define BecolArenaPushArray(arena, T, n, nz) \
+#define BecolArenaPushArray(arena, T, n, nz)                                   \
     (T *)BecolArenaPush(arena, sizeof(T) * (n), (bool)nz)
 
 /*

@@ -2,7 +2,6 @@
 #include "../errors/errors.h"
 #include "../memory/mem.h"
 #include <stddef.h>
-#include <stdio.h>
 #include <string.h>
 
 // utility file for stuff relating to Token stuff.
@@ -12,6 +11,8 @@
 // Allocating Programs / Getting a program reference
 Program *BecolGetProgram(MemoryArena *arena, char *prog) {
     Program *ret = BecolArenaPushStruct(arena, Program, false);
+    ret->text = BecolArenaPushArray(arena, char, strlen(prog) + 1, false);
+    ret->at_end = false;
     return ret;
 }
 
@@ -68,7 +69,16 @@ Token *BecolNextToken(MemoryArena *arena, Program *prog) {
     case '"':
         type = 2; // string
         break;
-    case '0' ... '9':
+    case '0':
+    case '1':
+    case '2':
+    case '3':
+    case '4':
+    case '5':
+    case '6':
+    case '7':
+    case '8':
+    case '9':
         type = 1; // number
         break;
     case '$':

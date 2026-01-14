@@ -3,11 +3,13 @@
 
 #include "memory/mem.h"
 
-void BecolInit();
-char *BecolVersion();
+void BecolInit(void);
+char *BecolVersion(void);
 
 void BecolModuleSearchPaths(char *paths[], int paths_len);
-void BecolRun(MemoryArena *arena, const char *path);
+void BecolRun(MemoryArena *arena
+              //, const char *path
+);
 
 void BecolCleanup(MemoryArena *arena);
 

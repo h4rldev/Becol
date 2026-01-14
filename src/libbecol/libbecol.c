@@ -6,11 +6,11 @@
 #include "tokenizer/tokenizer.h"
 #include <stdio.h>
 
-void BecolInit() {
+void BecolInit(void) {
     return; // TODO: things
 }
 
-char *BecolVersion() { return (VERSION " " SOURCE "+" COMMIT); }
+char *BecolVersion(void) { return (VERSION " " SOURCE "+" COMMIT); }
 
 void BecolModuleSearchPaths(char *paths[], int paths_len) {
     for (int i = 0; i < paths_len; i++) {
@@ -18,9 +18,13 @@ void BecolModuleSearchPaths(char *paths[], int paths_len) {
     }
 }
 
-void BecolRun(MemoryArena *arena, const char *str) {
-    ASTTreeNode *root = BecolGenASTTree(arena, (char *)str);
-    BecolFreeASTNode(arena, root);
+void BecolRun(MemoryArena *arena
+              //, const char *str
+) {
+    // ASTTreeNode *root = BecolGenASTTree(arena, (char *) str);
+    BecolFreeASTNode(arena
+                     //, root
+    );
 }
 
 void BecolCleanup(MemoryArena *arena) { BecolArenaDestroy(arena); }

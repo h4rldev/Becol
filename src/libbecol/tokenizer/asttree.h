@@ -3,11 +3,11 @@
 #include "tokens.h"
 
 #ifndef BECOL_ASTTREE
-    #define BECOL_ASTTREE
+#define BECOL_ASTTREE
 
-    #ifdef INCLUDE_ASTTREE_TOKEN_NAMES
+#ifdef INCLUDE_ASTTREE_TOKEN_NAMES
 extern char *ASTTreeTypeNames[];
-    #endif
+#endif
 
 typedef enum {
     BECOL_AST_PROGRAM,
@@ -44,6 +44,8 @@ typedef struct ASTTreeNode {
 char *BecolGetTypeNameFromASTType(MemoryArena *arena, ASTTreeType type);
 
 ASTTreeNode *BecolAllocASTNode(MemoryArena *arena);
-void BecolFreeASTNode(MemoryArena *arena, ASTTreeNode *node);
+void BecolFreeASTNode(MemoryArena *arena
+                      //, ASTTreeNode *node
+);
 
 #endif

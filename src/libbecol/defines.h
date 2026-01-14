@@ -1,6 +1,5 @@
-// makes lsps happy
-//
-// NOTE: ????
+// makes lsps happy (not really, works fine without it)
+// now gcc complains about redefining these
 
 // #ifndef VERSION
 // #define VERSION "UNKNOWN"

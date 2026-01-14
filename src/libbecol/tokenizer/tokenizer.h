@@ -6,6 +6,8 @@
 #include "asttree.h"
 #include "tokens.h"
 
-ASTTreeNode *BecolGenASTTree(MemoryArena *arena, char *prog);
+ASTTreeNode *BecolGenASTTree(MemoryArena *arena
+                             //, char *prog
+);
 
 #endif
