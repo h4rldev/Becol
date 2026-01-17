@@ -1,6 +1,7 @@
 #include "mem.h"
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <string.h>
 
 #if defined(_WIN32)
@@ -43,8 +44,10 @@ uint32_t BecolGetPageSize(void) { return (uint32_t)sysconf(_SC_PAGESIZE); }
 
 void *BecolReserveMemory(uint64_t size) {
     void *ret = mmap(NULL, size, PROT_NONE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
-    if (ret == MAP_FAILED)
+    if (ret == MAP_FAILED) {
+        fprintf(stderr, "Failed to mmap memory\n");
         return NULL;
+    }
 
     return ret;
 }
@@ -56,8 +59,10 @@ bool BecolCommitMemory(void *ptr, uint64_t size) {
 
 bool BecolDecommitMemory(void *ptr, uint64_t size) {
     int32_t ret = mprotect(ptr, size, PROT_NONE);
-    if (ret != 0)
+    if (ret != 0) {
+        fprintf(stderr, "Failed to mprotect memory\n");
         return false;
+    }
     ret = madvise(ptr, size, MADV_DONTNEED);
     return ret == 0;
 }
@@ -70,35 +75,6 @@ bool BecolReleaseMemory(void *ptr, uint64_t size) {
 #error "MacOS is unsupported"
 #endif
 
-// these function should be used instead of malloc and free
-// because these function help keep track of malloed memory
-// to help debug memory leaks
-
-// This is not supposted to be a custom malloc
-
-// All errors in here instantly crash the runtime because
-// error handling needs to malloc memory so we would be in
-// a infinite loop
-// try to malloc -> report error -> try to malloc -> report error -> etc
-
-// MemoryChunk *rootMemory = NULL;
-
-// append a chunk to the end of the list
-/*void addChunk(MemoryChunk *chunk) {
-    chunk->next = NULL;
-    if (rootMemory == NULL) {
-        chunk->prev = NULL;
-        rootMemory = chunk;
-    } else {
-        MemoryChunk *end_chunk = rootMemory;
-        while (end_chunk->next != NULL) {
-            end_chunk = end_chunk->next;
-        }
-        end_chunk->next = chunk;
-        chunk->prev = end_chunk;
-    }
-}*/
-
 MemoryArena *BecolArenaCreate(uint64_t reserve_size, uint64_t commit_size) {
     uint32_t page_size = BecolGetPageSize();
 
@@ -107,8 +83,10 @@ MemoryArena *BecolArenaCreate(uint64_t reserve_size, uint64_t commit_size) {
 
     MemoryArena *arena = BecolReserveMemory(reserve_size);
 
-    if (!BecolCommitMemory(arena, commit_size))
+    if (!BecolCommitMemory(arena, commit_size)) {
+        fprintf(stderr, "Failed to commit memory\n");
         return NULL;
+    }
 
     arena->reserved = reserve_size;
     arena->committed = commit_size;
@@ -126,8 +104,11 @@ void *BecolArenaPush(MemoryArena *arena, uint64_t size, bool non_zero) {
     uint64_t pos_aligned = ALIGN_UP_TO_POW2(arena->position, ARENA_ALIGN);
     uint64_t new_pos = pos_aligned + size;
 
-    if (new_pos > arena->reserved)
+    if (new_pos > arena->reserved) {
+        fprintf(stderr,
+                "Failed to allocate memory, pos is larger than reserved\n");
         return NULL;
+    }
 
     if (new_pos > arena->commit_position) {
         uint64_t new_commit_pos = new_pos;
@@ -138,8 +119,10 @@ void *BecolArenaPush(MemoryArena *arena, uint64_t size, bool non_zero) {
         uint8_t *mem = (uint8_t *)arena + arena->commit_position;
         uint64_t commit_size = new_commit_pos - arena->commit_position;
 
-        if (!BecolCommitMemory(mem, commit_size))
+        if (!BecolCommitMemory(mem, commit_size)) {
+            fprintf(stderr, "Failed to commit memory\n");
             return NULL;
+        }
 
         arena->commit_position = new_commit_pos;
     }
@@ -213,85 +196,3 @@ TemporaryArena BecolArenaScratchGet(MemoryArena **conflicts,
 void BecolArenaScratchRelease(TemporaryArena scratch) {
     BecolTemporaryArenaEnd(scratch);
 }
-
-/*bool canFreeChunk(void *addr) { // Try to find chunk, if found then delete
-chunk
-                                // and return true. Else return false
-    if (rootMemory == NULL) {
-        return false;
-    }
-    MemoryChunk *chunk = rootMemory;
-    if (chunk->next == NULL) {
-        if (chunk->addr != addr) {
-            return false;
-        }
-        free(chunk);
-        rootMemory = NULL;
-        return true;
-    }
-    while (chunk->addr != addr) {
-        if (chunk->next != NULL)
-            chunk = chunk->next;
-        else
-            return false;
-    }
-    if (chunk == rootMemory) {
-        rootMemory = chunk->next;
-    }
-    if (chunk->prev != NULL)
-        chunk->prev->next = chunk->next;
-    if (chunk->next != NULL)
-        chunk->next->prev = chunk->prev;
-    free(chunk);
-    return true;
-}*/
-
-// malloc memory and append chunk
-/*void *BecolMalloc(int size) {
-    void *mem = malloc(size);
-    MemoryChunk *new_chunk = malloc(sizeof(MemoryChunk));
-    if (mem == NULL || new_chunk == NULL) {
-        perror("FATAL: Failed to malloc memory");
-        exit(1);
-    }
-    new_chunk->size = size;
-    new_chunk->addr = mem;
-    addChunk(new_chunk);
-    return mem;
-}*/
-
-// free memory and delete chunk
-/*void BecolFree(void *mem) {
-    if (mem == NULL)
-        return;
-    if (canFreeChunk(mem))
-        free(mem);
-    else {
-        printf("FATAL: Tried to free memory at addres %p but no MemoryChunk
-" "exists for that address\n", mem); exit(1);
-    }
-}*/
-
-// read the .h file for a description
-/*char *BecolStrMalloc(char *str) {
-    int len = strlen(str);
-    char *ret = BecolMalloc(len + 1);
-    strcpy(ret, str);
-    return ret;
-}*/
-
-/*void BecolFreeAll() {
-    MemoryChunk *c = rootMemory;
-    MemoryChunk *tmp;
-    while (c != NULL) {
-        printf("WARNING: unfreed memory at %p with size %d\n", c->addr,
-               c->size);
-        free(c->addr);
-        // printf("%d\n", *(char*)c->addr); // hacky solution to get address
-        // sanitizer to
-        //  output stack trace of malloc cause use after free
-        tmp = c->next;
-        free(c);
-        c = tmp;
-    }
-}*/
