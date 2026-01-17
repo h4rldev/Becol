@@ -64,6 +64,7 @@ int BecolParseArgs(MemoryArena *arena, int argc, char *argv[],
     }
 
     path = argv[optind];
+    // printf("Opening file at path: %s\n", path);
     input_file = fopen(path, "r");
     if (input_file == NULL) {
         fprintf(stderr, "Error while opening file at path: %s\n", path);
@@ -76,14 +77,19 @@ int BecolParseArgs(MemoryArena *arena, int argc, char *argv[],
         return 1;
     }
 
+    // printf("File size: %ld\n", buffer.st_size);
+
     *file_data = BecolArenaPushArray(arena, char, buffer.st_size + 1, false);
-    *file_data[buffer.st_size] = '\0';
 
     if (fread(*file_data, 1, buffer.st_size, input_file) !=
         (unsigned long)buffer.st_size) {
         perror("fread");
         return 1;
     }
+
+    *file_data[buffer.st_size] = '\0';
+
+    // printf("File data: %s", *file_data);
 
     if (module_paths_idx != 0)
         BecolModuleSearchPaths(module_paths, module_paths_idx);
